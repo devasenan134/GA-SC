@@ -327,16 +327,16 @@ X_bow = tokens_to_bow(frame.cmd, 0)
 y_score = frame.score
 X_bow.shape
 
-"""### Compare models without GA"""
+X_train, X_test, Y_train, Y_test = split(X_bow, y_score)
 
-score1 = acc_score(X_bow, y_score)
-score1
+"""### Compare models without GA"""
+all_models_score_table = acc_score(X_bow, y_score)
+all_models_score_table
+
 
 """### Choosing the best classifier and starting evolution"""
-
 logmodel = RandomForestClassifier(n_estimators=200, random_state=0)
 
-X_train, X_test, Y_train, Y_test = split(X_bow, y_score)
 
 """### Trying different parameters"""
 
