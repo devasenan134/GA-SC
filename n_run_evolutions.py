@@ -361,26 +361,26 @@ logmodel = RandomForestClassifier(n_estimators=200, random_state=0)
 # with open('single_run.pkl', 'wb') as wf:
 #     pickle.dump([chromo_set_1, score_set_1], wf)
 
-def run_n_evolution(n):
-    result_n_runs = []
-    for i in range(n):
-        chromo_set_2, score_set_2 = evolution(
-            X_bow,
-            y_score,
-            size=80, 
-            feat_count=100,
-            n_feat=X_bow.shape[1],
-            n_parents=64,
-            crossover_pb=0.5,
-            mutation_pb=0.04,
-            mutation_rate=0.2,
-            n_gen=30,
-            X_train = X_train,
-            X_test = X_test,
-            Y_train = Y_train,
-            Y_test = Y_test
-        )
-        result_n_runs.append((chromo_set_2, score_set_2))
-    return result_n_runs
+# def run_n_evolution(n):
+#     result_n_runs = []
+#     for i in range(n):
+#         chromo_set_2, score_set_2 = evolution(
+#             X_bow,
+#             y_score,
+#             size=80, 
+#             feat_count=100,
+#             n_feat=X_bow.shape[1],
+#             n_parents=64,
+#             crossover_pb=0.5,
+#             mutation_pb=0.04,
+#             mutation_rate=0.2,
+#             n_gen=30,
+#             X_train = X_train,
+#             X_test = X_test,
+#             Y_train = Y_train,
+#             Y_test = Y_test
+#         )
+#         result_n_runs.append((chromo_set_2, score_set_2))
+#     return result_n_runs
 
 # plot(score_set_2, 0.5, 1.0, c = "green")
