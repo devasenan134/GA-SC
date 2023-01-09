@@ -3,9 +3,9 @@ import time
 import numpy as np
 from tabulate import tabulate
 
-from n_run_evolutions import evolution
-from n_run_evolutions import X_bow, y_score, X_train, X_test, Y_train, Y_test
-from n_run_evolutions import logmodel, X_train, Y_train, X_test, Y_test, accuracy_score, all_models_score_table
+from evolution_utils import evolution
+from evolution_utils import X_bow, y_score, X_train, X_test, Y_train, Y_test
+from evolution_utils import logmodel, X_train, Y_train, X_test, Y_test, accuracy_score, all_models_score_table
 
 
 def predicted_sentiment_ratio(y_test, predictions):
