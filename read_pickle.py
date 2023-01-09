@@ -20,3 +20,15 @@ with open(pkl_file, 'rb') as rf:
     data = pickle.load(rf)
     rf.close()
 print(tabulate(data, headers='keys', tablefmt="simple_grid"))
+
+pkl_file = 'single_run_table.pkl'
+with open(pkl_file, 'rb') as rf:
+    data = pickle.load(rf)
+    rf.close()
+print(tabulate(data, headers='keys', tablefmt="simple_grid"))
+
+pkl_file = 'n_run_table.pkl'
+with open(pkl_file, 'rb') as rf:
+    data = pickle.load(rf)
+    rf.close()
+print(tabulate(data, headers='keys', tablefmt="simple_grid"))
