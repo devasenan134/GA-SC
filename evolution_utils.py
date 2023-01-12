@@ -315,7 +315,7 @@ np.concatenate(([1,2,3,4],[5,6,7,8]))
 ### Data Preprocessing
 """
 
-amazon = pd.read_csv("data/amazon.csv")
+amazon = pd.read_csv("dataset/amazon.csv")
 amazon
 
 frame = amazon.copy()
