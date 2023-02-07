@@ -11,4 +11,8 @@ final selected features vechu, model train time vs normal model train time compa
 
 
 KBGA:-
+KBGA_IP
+KBGA_CO
+KBGA_MU
+KBGA_PS
 
