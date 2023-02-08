@@ -108,7 +108,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import random
 import time
-from random import randint, choices, randrange, random, sample
+from random import randint, choices, randrange, random, sample, shuffle
 
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
@@ -381,8 +381,26 @@ def evolution(df,
         
     return best_chromo,best_score
 
-
-
-
 """### Choosing the best classifier and starting evolution"""
 logmodel = RandomForestClassifier(n_estimators=200, random_state=0)
+
+
+
+amazon = pd.read_csv("/Users/devasenan/Documents/GA-SC/dataset/amazon.csv")
+amazon
+
+frame = amazon.copy()
+
+X_bow, features = custom_tokens_bow(frame.cmd)
+all_terms = list(features)
+y_score = frame.score
+
+idf = inverse_document_frequency(X_bow)
+tf_sent, tf_terms = term_frequency(X_bow)
+
+
+X_train, X_test, Y_train, Y_test = split(X_bow, y_score)
+
+"""### Compare models without GA"""
+all_models_score_table = acc_score(X_bow, y_score)
+all_models_score_table
