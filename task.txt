@@ -1,18 +1,3 @@
-Normal GA :-
-population size 100 set pannanum
-n_parent = 80%
-n_generations = 40 or 50
-test_number of runs = 2 or 3 runs
-final number of runs = 30 runs
-
-intersection of final resuts la top50% nu edukama, keep a threshod for the word count like
-words with 10 or more frequency should be taken
-final selected features vechu, model train time vs normal model train time compare pannanum
-
-
-KBGA:-
-KBGA_IP
-KBGA_CO
-KBGA_MU
-KBGA_PS
+1) KBGA bug
+2) Intersection vs normal accuracy difference
 
