@@ -367,7 +367,7 @@ def evolution(df,
         scores, pop_after_fit = fitness_score(population_nextgen)
         best_chromo.append(pop_after_fit[0])
         best_score.append(scores[0])
-        print('Best score in generation',i+1,':',scores[:1])
+        print('Best score in generation',i+1,':',scores[0], "feat_count:", np.where(pop_after_fit[0] != 0)[0].shape)
         pop_after_sel = population_selection(pop_after_fit, n_parents)
         # print(len(pop_after_sel))
         pop_after_cross = single_point_crossover(pop_after_sel, crossover_pb)
@@ -382,32 +382,6 @@ def evolution(df,
     return best_chromo,best_score
 
 
-"""# **Accuracy Comparison**
-
-## **For Amazon dataset**
-
-### Data Preprocessing
-"""
-
-amazon = pd.read_csv("dataset/amazon.csv")
-amazon
-
-frame = amazon.copy()
-
-"""*Difference between a stemmed and lemmatized words*"""
-
-X_bow, features = custom_tokens_bow(frame.cmd)
-all_terms = list(features)
-y_score = frame.score
-idf = inverse_document_frequency(X_bow)
-tf_sent, tf_terms = term_frequency(X_bow)
-
-
-X_train, X_test, Y_train, Y_test = split(X_bow, y_score)
-
-"""### Compare models without GA"""
-all_models_score_table = acc_score(X_bow, y_score)
-all_models_score_table
 
 
 """### Choosing the best classifier and starting evolution"""

@@ -298,7 +298,7 @@ def evolution(df,
     population_nextgen=generate_population(size, feat_count, n_feat)
     for i in range(n_gen):
         scores, pop_after_fit = fitness_score(population_nextgen)
-        print('Best score in generation',i+1,':',scores[:1])
+        print('Best score in generation',i+1,':',scores[0], "feat_count:", np.where(pop_after_fit[0] != 0)[0].shape)
         pop_after_sel = population_selection(pop_after_fit,n_parents)
         pop_after_cross = single_point_crossover(pop_after_sel, crossover_pb)
         population_nextgen = bit_flip_mutation(pop_after_cross, mutation_pb, mutation_rate, n_feat)
