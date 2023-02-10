@@ -8,5 +8,5 @@ $$$ 5) mutation layum, should manage to maintain the features count = eg, flippi
 
 6) clear doubt on, fitness function = X_train[:, features], is this the right method
 
-7) mutation rate ah feature_count kuda multiply pannanum
+$$$ 7) mutation rate ah feature_count kuda multiply pannanum
 8)crossover - take the indexes of both parents, find a single point and perform crossover in case of any repeatation of index, just chnage it to any other random index for that child
