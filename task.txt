@@ -1,9 +1,9 @@
 1) KBGA bug
-2) Intersection vs normal accuracy difference
+$$$ 2) Intersection vs normal accuracy difference
 
-3) initial population change in knowledge base
+$$$ 3) initial population change in knowledge base 
 4) crossover la, vera method use panni, should try to maintain the features count
-5) mutation layum, should manage to maintain the features count = eg, flipping 1 to 0, then also, flip some other 0 bit to 1
+$$$ 5) mutation layum, should manage to maintain the features count = eg, flipping 1 to 0, then also, flip some other 0 bit to 1
 
 
 6) clear doubt on, fitness function = X_train[:, features], is this the right method
