@@ -2,11 +2,15 @@
 $$$ 2) Intersection vs normal accuracy difference
 
 $$$ 3) initial population change in knowledge base 
-4) crossover la, vera method use panni, should try to maintain the features count
+$$$ 4) crossover la, vera method use panni, should try to maintain the features count
 $$$ 5) mutation layum, should manage to maintain the features count = eg, flipping 1 to 0, then also, flip some other 0 bit to 1
 
 
-6) clear doubt on, fitness function = X_train[:, features], is this the right method
+$$$ 6) clear doubt on, fitness function = X_train[:, features], is this the right method
 
 $$$ 7) mutation rate ah feature_count kuda multiply pannanum
-8)crossover - take the indexes of both parents, find a single point and perform crossover in case of any repeatation of index, just chnage it to any other random index for that child
+$$$ 8)crossover - take the indexes of both parents, find a single point and perform crossover in case of any repeatation of index, just chnage it to any other random index for that child
+
+11/02/2023
+9) results analysis for GA to be done
+10) 100gen runs, other dataset runs
