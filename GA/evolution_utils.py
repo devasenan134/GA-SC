@@ -63,22 +63,29 @@ def re_lemmatizor(frame):
 from sklearn.feature_extraction.text import CountVectorizer # bow
 def tokens_to_bow(corpus_tokens, tokenizer=1):
     cv = CountVectorizer(max_features=5000)
-    if tokenizer:
-        X_bow = cv.fit_transform(tokenize_lemmatizor(corpus_tokens)).toarray()
+    tokens = []
+    if tokenizer == 1:
+        tokens = tokenize_lemmatizor(corpus_tokens)
+        X_bow = cv.fit_transform(tokens).toarray()
     else:
-        X_bow = cv.fit_transform(re_lemmatizor(corpus_tokens)).toarray()
-    return X_bow
+        tokens = re_lemmatizor(corpus_tokens)
+        X_bow = cv.fit_transform(tokens).toarray()
+    features = cv.get_feature_names_out()
+    return X_bow, features
 
 """### 3.2. TF-IDF"""
 
 from sklearn.feature_extraction.text import TfidfVectorizer # tfidf
 def tokens_to_tfidf(corpus_tokens, tokenizer=1):
     tfidf = TfidfVectorizer()
+    tokens = []
     if tokenizer:
-        X_tfidf = tfidf.fit_transform(tokenize_lemmatizor(corpus_tokens)).toarray()
+        tokens = tokenize_lemmatizor(corpus_tokens)
+        X_tfidf = tfidf.fit_transform(tokens).toarray()
     else:
-        X_tfidf = tfidf.fit_transform(re_lemmatizor(corpus_tokens)).toarray()
-    return X_tfidf
+        tokens = re_lemmatizor(corpus_tokens)
+        X_tfidf = tfidf.fit_transform(tokens).toarray()
+    return X_tfidf, tokens
 
 """## **Real Time preprocessing**"""
 
@@ -98,19 +105,6 @@ def tokens_to_tfidf(corpus_tokens, tokenizer=1):
  
 #     return X_vector
 
-"""# **Dummy**"""
-
-# dummy test practice
-bow = [[0, 1, 0, 1, 1],
-       [1, 0, 1, 0, 0],
-       [0, 1, 1, 1, 0],
-       [1, 0, 0, 0, 1],
-       [0, 1, 0, 0, 0],
-       [1, 1, 0, 0, 1]]
-bow = np.array(bow)
-bow
-
-bow[:, [1,0,1,0,1]]
 
 """# **2. Feature Extraction using GA**
 
@@ -220,14 +214,14 @@ def plot(score,x,y,c = "b"):
     ax.set(xlabel="Generation", ylabel="Accuracy")
     ax.set(ylim=(x,y))
 
-def generate_chromo(features_count, length):
-    features = sample(range(length), k=features_count)
+def generate_chromo(features_count, chromo_size):
+    features = sample(range(chromo_size), k=features_count)
     features.sort()
-    chromo = [1 if i in features else 0 for i in range(length)]
-    return chromo
+    chromo = [1 if i in features else 0 for i in range(chromo_size)]
+    return np.array(chromo)
 
-def generate_population(size, features_count, length):
-    return np.array([generate_chromo(features_count, length) for _ in range(size)])
+def generate_population(size, features_count, chromo_size):
+    return [generate_chromo(features_count, chromo_size) for _ in range(size)]
 
 def feature_selection(sent):
     indexes = []
@@ -237,38 +231,114 @@ def feature_selection(sent):
     return indexes
 
 def single_point_crossover(pop_after_sel, probability):
-    pop_nextgen = list(pop_after_sel)
+    shuffle(list(pop_after_sel))
+    pop_nextgen = pop_after_sel
     length = len(pop_nextgen)
     chrom_l = len(pop_nextgen[0])
     for i in range(0, len(pop_after_sel), 2):
-        new_chromo = []
         parent_1, parent_2 = pop_nextgen[i], pop_nextgen[i+1]
-        if random() < probability:
+        if random() <= probability:
             k = randint(1, chrom_l - 1)  # crossover_point
-            new_child = np.concatenate([parent_1[:k], parent_2[k:]])
-            pop_nextgen.append(new_child)
+            new_child_1 = np.concatenate([parent_1[:k], parent_2[k:]])
+            new_child_2 = np.concatenate([parent_2[:k], parent_1[k:]])
+            pop_nextgen.append(new_child_1)
+            pop_nextgen.append(new_child_2)
+            # print("co c1:", np.where(new_child_1 != 0)[0].shape)
+            # print("co c2:", np.where(new_child_2 != 0)[0].shape)
+        else:
+            pop_nextgen.append(parent_1)
+            pop_nextgen.append(parent_2)
+            # print("co p1:", np.where(parent_1 != 0)[0].shape)
+            # print("co p2:", np.where(parent_2 != 0)[0].shape)
+        
     return pop_nextgen
 
 # single_point_crossover(bow, 0.5)
 
-def bit_flip_mutation(pop_after_cross, probability, mutation_rate,n_feat):   
+def single_point_crossover1(pop_after_sel, probability):
+    shuffle(list(pop_after_sel))
+    pop_nextgen = list(pop_after_sel)
+    chromo_l = len(pop_nextgen[0])
+    for i in range(0, len(pop_after_sel), 2):
+        parent_1, parent_2 = pop_nextgen[i], pop_nextgen[i+1]
+        p1_features = list(np.where(np.array(parent_1) != 0)[0])
+        p2_features = list(np.where(np.array(parent_2) != 0)[0])
+        if random() <= probability:
+            k = randint(0,len(p1_features))  # crossover_point
+            c1_features = p1_features[:k] + p2_features[k:]
+            c2_features = p2_features[:k] + p1_features[k:]
+
+            c1_dup = list(set([i for i in c1_features if c1_features.count(i) > 1]))
+            c2_dup = list(set([i for i in c2_features if c2_features.count(i) > 1]))
+            # print("duplicates:", c1_dup, c2_dup)
+
+            if len(c1_dup) > 0:
+                sample_pop1 = [i for i in p1_features if i not in c1_features]
+                k1 = sample(sample_pop1, k=len(c1_dup))
+                for i in c1_dup:
+                    c1_features.remove(i)
+                c1_features.extend(k1)
+            elif len(c2_dup) > 0:
+                sample_pop2 = [i for i in p2_features if i not in c2_features]
+                k2 = sample(sample_pop2, k=len(c2_dup))
+                for i in c2_dup:
+                    c2_features.remove(i)
+                c2_features.extend(k2)
+
+            new_child_1 = np.array([1 if i in c1_features else 0 for i in range(chromo_l)])
+            new_child_2 = np.array([1 if i in c2_features else 0 for i in range(chromo_l)])
+            pop_nextgen.append(new_child_1)
+            pop_nextgen.append(new_child_2)
+            # print(len(c1_features), len(c2_features))
+        else:
+            pop_nextgen.append(np.array(parent_1))
+            pop_nextgen.append(np.array(parent_2))
+        
+    return pop_nextgen
+
+def bit_flip_mutation(pop_after_cross, probability, mutation_rate):
+    n_feat = pop_after_cross[0].shape[0]   
     mutation_range = int(mutation_rate*n_feat)
     pop_next_gen = []
-    for n in range(0,len(pop_after_cross)):
+    for n in range(len(pop_after_cross)):
         chromo = pop_after_cross[n]
         rand_posi = []
-        if random() > probability:
-            pop_next_gen.append(chromo)
-        else:
-            for i in range(0,mutation_range):
+        if random() <= probability:
+            for i in range(mutation_range):
                 pos = randint(0,n_feat-1)
                 rand_posi.append(pos)
             for j in rand_posi:
                 chromo[j] = abs(chromo[j] - 1)
-            pop_next_gen.append(chromo)
+        pop_next_gen.append(chromo)
+        # print("MU ch:", np.where(chromo != 0)[0].shape)
+    return pop_next_gen
+
+def bit_flip_mutation1(pop_after_cross, probability, mutation_rate, features_count):
+    mutation_range = int(mutation_rate*features_count)
+    # if mutation_range%2 != 0:
+    #     mutation_range -= 1
+    # mid = mutation_range//2
+    # print(mutation_range, features_count)
+    
+    pop_next_gen = []
+    for n in range(len(pop_after_cross)):
+        chromo = pop_after_cross[n]
+        features = list(np.where(chromo != 0)[0])
+        non_features = list(np.setdiff1d(np.array(range(chromo.shape[0])), features))
+        
+        rand_posi = []
+        if random() <= probability:
+            features_pos = sample(features, k=mutation_range)
+            non_features_pos = sample(non_features, k=mutation_range)
+            rand_posi.extend(features_pos)
+            rand_posi.extend(non_features_pos)
+            for j in rand_posi:
+                chromo[j] = abs(chromo[j] - 1)
+        pop_next_gen.append(chromo)
     return pop_next_gen
 
 def population_selection(pop_after_fit,n_parents):
+    # size = int(len(pop_after_fit)*(n_parents/100))
     population_nextgen = []
     for i in range(n_parents):
         population_nextgen.append(pop_after_fit[i])
@@ -285,28 +355,37 @@ def fitness_score(population):
     inds = np.argsort(scores)                                    
     return list(scores[inds][::-1]), list(population[inds,:][::-1])
 
-def evolution(df,
-            label,
-            size, feat_count, n_feat,
+def evolution(size, features_count, chromo_size,
             n_parents,
             crossover_pb, mutation_pb,
             mutation_rate,
-            n_gen,
-            X_train, X_test, Y_train, Y_test):
+            n_gen):
     best_chromo= []
     best_score= []
-    population_nextgen=generate_population(size, feat_count, n_feat)
+    
+    population_nextgen=generate_population(size, features_count, chromo_size)
+
     for i in range(n_gen):
         scores, pop_after_fit = fitness_score(population_nextgen)
-        print('Best score in generation',i+1,':',scores[0], "feat_count:", np.where(pop_after_fit[0] != 0)[0].shape)
-        pop_after_sel = population_selection(pop_after_fit,n_parents)
-        pop_after_cross = single_point_crossover(pop_after_sel, crossover_pb)
-        population_nextgen = bit_flip_mutation(pop_after_cross, mutation_pb, mutation_rate, n_feat)
         best_chromo.append(pop_after_fit[0])
         best_score.append(scores[0])
+        print('Best score in generation',i+1,':',scores[0], "feat_count:", np.where(pop_after_fit[0] != 0)[0].shape)
+
+        pop_after_sel = population_selection(pop_after_fit,n_parents)
+        
+        pop_after_cross = single_point_crossover1(pop_after_sel, crossover_pb)
+
+        population_nextgen = bit_flip_mutation1(pop_after_cross, mutation_pb, mutation_rate, features_count)
+    
+        
+        # new next gen population will have the evolved population + the initial population after fitness_score
+        population_nextgen += pop_after_sel
+        _, population_new_nextgen = fitness_score(population_nextgen)
+        population_nextgen = population_selection(population_new_nextgen, n_parents)
+        print("Population size:", len(population_nextgen))
+        
     return best_chromo,best_score
 
-np.concatenate(([1,2,3,4],[5,6,7,8]))
 
 """# **Accuracy Comparison**
 
@@ -315,7 +394,7 @@ np.concatenate(([1,2,3,4],[5,6,7,8]))
 ### Data Preprocessing
 """
 
-amazon = pd.read_csv("dataset/amazon.csv")
+amazon = pd.read_csv("../dataset/amazon.csv")
 amazon
 
 frame = amazon.copy()
@@ -323,9 +402,9 @@ frame = amazon.copy()
 """*Difference between a stemmed and lemmatized words*"""
 
 
-X_bow = tokens_to_bow(frame.cmd, 0)
+X_bow, features = tokens_to_bow(frame.cmd, 0)
 y_score = frame.score
-X_bow.shape
+all_terms = list(features)
 
 X_train, X_test, Y_train, Y_test = split(X_bow, y_score)
 
@@ -340,47 +419,51 @@ logmodel = RandomForestClassifier(n_estimators=200, random_state=0)
 
 """### Trying different parameters"""
 
+# st = time.time()
 # chromo_set_1, score_set_1 = evolution(
-#     X_bow,
-#     y_score,
-#     size=80, 
-#     feat_count=100,
-#     n_feat=X_bow.shape[1],
-#     n_parents=64,
-#     crossover_pb=0.5,
-#     mutation_pb=0.04,
-#     mutation_rate=0.2,
-#     n_gen=30,
-#     X_train = X_train,
-#     X_test = X_test,
-#     Y_train = Y_train,
-#     Y_test = Y_test
+#     size=100,
+#     features_count=100,
+#     chromo_size=X_bow.shape[1],
+#     n_parents=80,
+#     crossover_pb=0.8,
+#     mutation_pb=0.05,
+#     mutation_rate=0.05,
+#     n_gen=100
 # )
+# et = time.time()
+# exce_time_1 = et-st
+
+# sns.lineplot(x=list(range(1, 101)), y=score_set_1)
+# plt.title('Amazon Dataset')
+# plt.xlabel('Generations')
+# plt.ylabel('Accuracy')
 
 # import pickle
-# with open('single_run.pkl', 'wb') as wf:
-#     pickle.dump([chromo_set_1, score_set_1], wf)
+# with open('single_run_az_100fc.pkl', 'wb') as wf:
+#     pickle.dump([chromo_set_1, score_set_1, exce_time_1], wf)
 
 # def run_n_evolution(n):
 #     result_n_runs = []
 #     for i in range(n):
+#         st = time.time()
 #         chromo_set_2, score_set_2 = evolution(
-#             X_bow,
-#             y_score,
-#             size=80, 
+#             size=100, 
 #             feat_count=100,
 #             n_feat=X_bow.shape[1],
-#             n_parents=64,
-#             crossover_pb=0.5,
-#             mutation_pb=0.04,
-#             mutation_rate=0.2,
-#             n_gen=30,
-#             X_train = X_train,
-#             X_test = X_test,
-#             Y_train = Y_train,
-#             Y_test = Y_test
+#             n_parents=80,
+#             crossover_pb=0.8,
+#             mutation_pb=0.05,
+#             mutation_rate=0.1,
+#             n_gen=40
 #         )
-#         result_n_runs.append((chromo_set_2, score_set_2))
+#         et = time.time()
+#         result_n_runs.append((chromo_set_2, score_set_2, et-st))
 #     return result_n_runs
 
 # plot(score_set_2, 0.5, 1.0, c = "green")
+
+# results = run_n_evolution(30)
+
+# import pickle
+# with open('n_run_az_100fc.pkl', 'wb') as wf:
+#     pickle.dump(results, wf)
