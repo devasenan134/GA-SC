@@ -13,4 +13,6 @@ $$$ 8)crossover - take the indexes of both parents, find a single point and perf
 
 11/02/2023
 9) results analysis for GA to be done
-10) 100gen runs, other dataset runs
+$$$ 10) 100gen runs, other dataset runs
+
+11) pop_after_sel has to be copied to maintain the pop size
