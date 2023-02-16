@@ -17,6 +17,7 @@ $$$ 10) 100gen runs, other dataset runs
 
 11) pop_after_sel has to be copied to maintain the pop size
 
+
 16/02/2023
 12) kbga with varient pressure - in the selection process
 100 from ip, 80 from fitness, tfidf thresh form selection, crossover la parent 80+ child
