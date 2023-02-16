@@ -16,3 +16,7 @@ $$$ 8)crossover - take the indexes of both parents, find a single point and perf
 $$$ 10) 100gen runs, other dataset runs
 
 11) pop_after_sel has to be copied to maintain the pop size
+
+12) kbga with varient pressure - in the selection process
+13) kbga with varient pressure - in the selection process, without kb in ps
+14) kbga_no_kbps, kbga-es50 - done and continue with 30runs
