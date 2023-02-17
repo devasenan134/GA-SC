@@ -22,7 +22,15 @@ $$$ 10) 100gen runs, other dataset runs
 12) kbga with varient pressure - in the selection process
 100 from ip, 80 from fitness, tfidf thresh form selection, crossover la parent 80+ child
 13) kbga with varient pressure - in the selection process, without kb in ps
-14) kbga_no_kbps, kbga-es50 - done and continue with 30runs
-15) kbga_with no mutation_prb and crossover_prb
 
-16) add child+parents and control pop to 80, after crossover tooo - to all types
+
+$$$ 14) kbga_no_kbps 
+$$$ 15) kbga-es50 - done and continue with 30runs
+
+$$$ 16) kbga_with no mutation_prb and crossover_prb
+$$$ 17) add child+parents and control pop to 80, after crossover tooo - to all types
+
+
+/// ella methods layum, ip->100, fitness->80, co->80, mu->80, intha flow ok va
+/// base population selection enna vekkanum
+/// base co, mu ku probability vekanuma venama

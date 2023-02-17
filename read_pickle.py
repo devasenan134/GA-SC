@@ -3,7 +3,7 @@ from tabulate import tabulate
 import seaborn as sns
 
 pkl_path = 'pickles/'
-pkl_file = pkl_path+'kbga/amazon/single_run_az_kbga_no_kbps.pkl'
+pkl_file = pkl_path+'ga/single_run_az_100fc.pkl'
 
 with open(pkl_file, 'rb') as rf:
     data = pickle.load(rf)
