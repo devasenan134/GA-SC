@@ -12,16 +12,16 @@ $$$ 7) mutation rate ah feature_count kuda multiply pannanum
 $$$ 8)crossover - take the indexes of both parents, find a single point and perform crossover in case of any repeatation of index, just chnage it to any other random index for that child
 
 11/02/2023
-9) results analysis for GA to be done
+$$$ 9) results analysis for GA to be done
 $$$ 10) 100gen runs, other dataset runs
 
-11) pop_after_sel has to be copied to maintain the pop size
+$$$ 11) pop_after_sel has to be copied to maintain the pop size
 
 
 16/02/2023
-12) kbga with varient pressure - in the selection process
+$$$ 12) kbga with varient pressure - in the selection process
 100 from ip, 80 from fitness, tfidf thresh form selection, crossover la parent 80+ child
-13) kbga with varient pressure - in the selection process, without kb in ps
+$$$ 13) kbga with varient pressure - in the selection process, without kb in ps
 
 
 $$$ 14) kbga_no_kbps 
@@ -31,6 +31,8 @@ $$$ 16) kbga_with no mutation_prb and crossover_prb
 $$$ 17) add child+parents and control pop to 80, after crossover tooo - to all types
 
 
-/// ella methods layum, ip->100, fitness->80, co->80, mu->80, intha flow ok va
-/// base population selection enna vekkanum
-/// base co, mu ku probability vekanuma venama
+18) correct the fluctuation of the kbga varients
+19) Comparison graph for 4 varients of kbga
+20) the best kbga, should to taken for comparison with GA
+21) save the pop size, in each step for all generations
+22) Intersection part to be done
