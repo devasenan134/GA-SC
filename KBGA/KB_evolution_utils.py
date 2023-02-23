@@ -72,7 +72,7 @@ def custom_tokens_bow(corpus_tokens):
         for word in sentence.split():
             sent_dict[word] = sent_dict.get(word, 0) + 1
         bow.append([sent_dict[feature] if feature in sent_dict.keys() else 0 for feature in features ])
-    print("Total Vocab Count:", len(features))
+    #print("Total Vocab Count:", len(features))
     return np.array(bow), features
 
 from sklearn.feature_extraction.text import CountVectorizer # bow
@@ -85,7 +85,8 @@ def tokens_to_bow(corpus_tokens, tokenizer=1):
     else:
         tokens = re_lemmatizor(corpus_tokens)
         X_bow = cv.fit_transform(tokens).toarray()
-    return X_bow, tokens
+    features = cv.get_feature_names_out()
+    return X_bow, features
 
 """### 3.2. TF-IDF"""
 
@@ -192,71 +193,67 @@ def plot(score,x,y,c = "b"):
     ax.set(xlabel="Generation", ylabel="Accuracy")
     ax.set(ylim=(x,y))
 
-def generate_chromo(selected_indexes, feat_count):
-    features = sample(selected_indexes, k=feat_count)
+def generate_chromo(selected_indexes, features_count, chromo_size):
+    features = sample(selected_indexes, k=features_count)
     features.sort()
-    chromo = [1 if i in features else 0 for i in selected_indexes]
-    return chromo
+    chromo = [1 if i in features else 0 for i in range(chromo_size)]
+    return np.array(chromo)
 
-def generate_population(size, selected_indexes, features_count):
-    return [generate_chromo(selected_indexes, features_count) for _ in range(size)]
+def generate_population(size, features_count, chromo_size, selected_indexes):
+    return [generate_chromo(selected_indexes, features_count, chromo_size) for _ in range(size)]
 
-
-def single_point_crossover(pop_after_sel, probability):
+def single_point_crossover1(pop_after_sel, n_parents):
     shuffle(list(pop_after_sel))
-    pop_nextgen = pop_after_sel
+    pop_nextgen = list(pop_after_sel)
     length = len(pop_nextgen)
-    chrom_l = len(pop_nextgen[0])
+    chromo_l = len(pop_nextgen[0])
 
-    tf_idf_sent_score = dict(term_frequency_inverse_document_freqency(pop_after_sel))
-    pop_sorted_tfidf = np.array(sorted(tf_idf_sent_score.items(), key=lambda x: x[1], reverse=True))[:, 0]
+    tf_idf_sent_score = dict(term_frequency_inverse_document_frequency(pop_after_sel))
+    pop_sorted_tfidf = np.array(sorted(tf_idf_sent_score.items(), key=lambda x: x[1]))[:, 0]
     
     mid = len(pop_sorted_tfidf)//2
     pop_1 = pop_sorted_tfidf[:mid]
     pop_2 = pop_sorted_tfidf[mid:]
-    
-    i=0
-    j=0
-    m = len(pop_1)
-    n = len(pop_2)
-    # print(m, n)
-    
-    while i<m and j<n:
-        parent_1, parent_2 = pop_after_sel[int(pop_1[i])], pop_after_sel[int(pop_2[j])]
-        if random() <= probability:
-            k = randint(1, chrom_l - 1)  # crossover_point
-            new_child_1 = np.concatenate([parent_1[:k], parent_2[k:]])
-            new_child_2 = np.concatenate([parent_2[:k], parent_1[k:]])
-            pop_nextgen.append(new_child_1)
-            pop_nextgen.append(new_child_2)
-        else:
-            pop_nextgen.append(parent_1)
-            pop_nextgen.append(parent_2)
-        i+=1
-        j+=1
+
+    for i in range(0, mid):
+        parent_1, parent_2 = pop_after_sel[int(pop_1[i])], pop_after_sel[int(pop_2[i])]
+        p1_features = list(np.where(np.array(parent_1) != 0)[0])
+        p2_features = list(np.where(np.array(parent_2) != 0)[0])
+
+        k = randint(0,len(p1_features))  # crossover_point
+        c1_features = p1_features[:k] + p2_features[k:]
+        c2_features = p2_features[:k] + p1_features[k:]
+        c1_dup = list(set([i for i in c1_features if c1_features.count(i) > 1]))
+        c2_dup = list(set([i for i in c2_features if c2_features.count(i) > 1]))
+            # print("duplicates:", c1_dup, c2_dup)
         
-    while i<m:
-        parent_1 = pop_after_sel[int(pop_1[i])]
-        pop_nextgen.append(parent_1)
-        i+=1
+        if len(c1_dup) > 0:
+            sample_pop1 = [i for i in p1_features if i not in c1_features]
+            k1 = sample(sample_pop1, k=len(c1_dup))
+            for i in c1_dup:
+                c1_features.remove(i)
+            c1_features.extend(k1)
+        elif len(c2_dup) > 0:
+            sample_pop2 = [i for i in p2_features if i not in c2_features]
+            k2 = sample(sample_pop2, k=len(c2_dup))
+            for i in c2_dup:
+                c2_features.remove(i)
+            c2_features.extend(k2)
+        new_child_1 = np.array([1 if i in c1_features else 0 for i in range(chromo_l)])
+        new_child_2 = np.array([1 if i in c2_features else 0 for i in range(chromo_l)])
+        pop_nextgen.append(new_child_1)
+        pop_nextgen.append(new_child_2)
     
-    while j<n:
-        parent_2 = pop_after_sel[int(pop_2[j])]
-        pop_nextgen.append(parent_2)
-        j+=1
-    
-    return pop_nextgen
-    
-def bit_flip_mutation(pop_after_cross, probability, mutation_rate1, mutation_rate2, n_feat):   
-    n_feat = pop_after_cross[0].shape[0]
-    # print(n_feat)
-    
-    range1 = int(mutation_rate1*n_feat)
-    range2 = int(mutation_rate2*n_feat)
-    pop_next_gen = []
-    
-    tf_idf_sent_score = dict(term_frequency_inverse_document_freqency(pop_after_cross))
-    pop_sorted_tfidf = np.array(sorted(tf_idf_sent_score.items(), key=lambda x: x[1], reverse=True))[:, 0]
+    _, pop_nextgen = fitness_score(pop_nextgen)
+    return pop_nextgen[:n_parents]
+
+def bit_flip_mutation1(pop_after_cross, mutation_rate1, mutation_rate2, features_count, n_parents):   
+    range1 = int(mutation_rate1*features_count)
+    range2 = int(mutation_rate2*features_count)
+    pop_next_gen = list(pop_after_cross)
+    # print(range1, range2)
+    tf_idf_sent_score = dict(term_frequency_inverse_document_frequency(pop_after_cross))
+    pop_sorted_tfidf = np.array(sorted(tf_idf_sent_score.items(), key=lambda x: x[1]))[:, 0]
     
     mid = len(pop_sorted_tfidf)//2+1
     for n in pop_sorted_tfidf:
@@ -266,26 +263,28 @@ def bit_flip_mutation(pop_after_cross, probability, mutation_rate1, mutation_rat
             mutation_range = range2
             
         chromo = pop_after_cross[int(n)]
+        features = list(np.where(chromo != 0)[0])
+        non_features = list(np.setdiff1d(np.array(range(chromo.shape[0])), features))
+
         rand_posi = []
-        if random() <= probability:
-            for i in range(0,mutation_range):
-                pos = randint(0,n_feat-1)
-                rand_posi.append(pos)
-            for j in rand_posi:
-                chromo[j] = abs(chromo[j] - 1)
+
+        features_pos = sample(features, k=mutation_range)
+        non_features_pos = sample(non_features, k=mutation_range)
+        rand_posi.extend(features_pos)
+        rand_posi.extend(non_features_pos)
+        for j in rand_posi:
+            chromo[j] = abs(chromo[j] - 1)
+        
         pop_next_gen.append(chromo)
         mid -= 1
-    
-    return pop_next_gen
+
+    _, pop_next_gen = fitness_score(pop_next_gen)
+    return pop_next_gen[:n_parents]
 
 def population_selection(pop_after_fit, n_parents):
-    tf_idf_sent_score = dict(term_frequency_inverse_document_freqency(pop_after_fit))
-    # n_parents = int(len(pop_after_fit)*(n_parents/100))
-    pop_sorted_tfidf = np.array(sorted(tf_idf_sent_score.items(), key=lambda x: x[1], reverse=True))[:n_parents,0]
-    # print(pop_sorted_tfidf)
     population_nextgen = []
-    for i in pop_sorted_tfidf:
-        population_nextgen.append(pop_after_fit[int(i)])
+    for i in range(n_parents):
+        population_nextgen.append(pop_after_fit[i])
     return population_nextgen
 
 def fitness_score(population):
@@ -343,9 +342,7 @@ def term_frequency_inverse_document_freqency(population):
     tf_idf = sorted(tf_idf.items(), key=lambda x: x[1], reverse=True)
     return tf_idf
 
-def evolution(df,
-            label,
-            size, feat_count, n_feat,
+def evolution(size, features_count, chromo_size,
             n_parents,
             crossover_pb, mutation_pb,
             mutation_rate1,
@@ -353,8 +350,7 @@ def evolution(df,
             n_gen,
             idf, idf_threshold,
             tf, tf_threshold,
-            tfidf_threshold,
-            X_train, X_test, Y_train, Y_test):
+            tfidf_threshold):
     best_chromo= []
     best_score= []
     
@@ -362,21 +358,30 @@ def evolution(df,
     selected_indexes, selected_terms = initial_population_term_selection_idf(idf, idf_threshold)
     # selected_indexes, selected_terms = initial_population_term_selection_tf(tf, tf_threshold)
 
-    population_nextgen=generate_population(size, selected_indexes, feat_count)
+    population_nextgen=generate_population(size, features_count, chromo_size, selected_indexes)
     for i in range(n_gen):
         scores, pop_after_fit = fitness_score(population_nextgen)
         best_chromo.append(pop_after_fit[0])
         best_score.append(scores[0])
         print('Best score in generation',i+1,':',scores[0], "feat_count:", np.where(pop_after_fit[0] != 0)[0].shape)
+
         pop_after_sel = population_selection(pop_after_fit, n_parents)
-        # print(len(pop_after_sel))
-        pop_after_cross = single_point_crossover(pop_after_sel, crossover_pb)
-        population_nextgen = bit_flip_mutation(pop_after_cross, mutation_pb, mutation_rate1, mutation_rate2, n_feat)
-        
+        # sc_sel, pop_sel = fitness_score(pop_after_sel)
+        # print('Best score in generation',i+1,':',sc_sel[0], "feat_count:", np.where(pop_sel[0] != 0)[0].shape)
+
+        pop_after_cross = single_point_crossover1(pop_after_sel, n_parents)
+        # sc_co, pop_co = fitness_score(pop_after_cross)
+        # print('Best score in generation',i+1,':',sc_co[0], "feat_count:", np.where(pop_co[0] != 0)[0].shape)
+
+        population_nextgen = bit_flip_mutation1(pop_after_cross, mutation_rate1, mutation_rate2, features_count, n_parents)
+        # sc_mu, pop_mu = fitness_score(population_nextgen)
+        # print('Best score in generation',i+1,':',sc_mu[0], "feat_count:", np.where(pop_mu[0] != 0)[0].shape)
+
         # # new next gen population will have the evolved population + the initial population after fitness_score
-        population_nextgen += pop_after_sel
-        _, population_new_nextgen = fitness_score(population_nextgen)
-        population_nextgen = population_selection(population_new_nextgen, n_parents)
+        # population_nextgen += pop_after_sel
+        # _, population_new_nextgen = fitness_score(population_nextgen)
+        # print('Best score in generation',i+1,':',_[0], "feat_count:", np.where(population_new_nextgen[0] != 0)[0].shape)
+        # population_nextgen = population_selection(population_new_nextgen, n_parents)
         print(len(population_nextgen))
         
     return best_chromo,best_score
@@ -386,14 +391,14 @@ logmodel = RandomForestClassifier(n_estimators=200, random_state=0)
 
 
 
-amazon = pd.read_csv("/Users/devasenan/Documents/GA-SC/dataset/amazon.csv")
+amazon = pd.read_csv("../dataset/amazon.csv", encoding='latin1')
 amazon
 
 frame = amazon.copy()
 
-X_bow, features = custom_tokens_bow(frame.cmd)
-all_terms = list(features)
+X_bow, features = tokens_to_bow(frame.cmd, 0)
 y_score = frame.score
+all_terms = list(features)
 
 idf = inverse_document_frequency(X_bow)
 tf_sent, tf_terms = term_frequency(X_bow)
