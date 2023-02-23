@@ -32,7 +32,9 @@ $$$ 17) add child+parents and control pop to 80, after crossover tooo - to all t
 
 
 18) correct the fluctuation of the kbga varients
-19) Comparison graph for 4 varients of kbga
-20) the best kbga, should to taken for comparison with GA
-21) save the pop size, in each step for all generations
-22) Intersection part to be done
+$$$ 19) Comparison graph for 4 varients of kbga
+$$$ 20) the best kbga, should to taken for comparison with GA
+$$$ 21) save the pop size, in each step for all generations
+$$$ 22) Intersection part to be done
+
+!!! in es50 from 1st gen-80pop is passed, then in the next gen, the population selection becomes obsolete
