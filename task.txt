@@ -38,7 +38,12 @@ $$$ 22) Intersection part to be done
 
 
 24/02/2023
-23) es50 varient - try with 2 more versions = one should pass 100pop from mu to next generation
+$$$ 23) es50 varient - try with 2 more versions = one should pass 100pop from mu to next generation
                                             = this should pass 160pop from mu to next generation
                                             choose the best one and apply it to all other varients
 $$$ 24) still should work on the fluctuations
+
+28/02/2023
+25) Do PT for GA on CO and MU probability
+26) Run 5 runs for 2 types of ES50 and plot comparison
+27) once pt is done, run 30 runs for 100, 150 and 200 fc for GA and all KBGA varients
