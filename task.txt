@@ -41,4 +41,4 @@ $$$ 22) Intersection part to be done
 23) es50 varient - try with 2 more versions = one should pass 100pop from mu to next generation
                                             = this should pass 160pop from mu to next generation
                                             choose the best one and apply it to all other varients
-24) still should work on the fluctuations
+$$$ 24) still should work on the fluctuations
