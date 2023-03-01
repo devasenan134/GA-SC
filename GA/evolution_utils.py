@@ -223,13 +223,6 @@ def generate_chromo(features_count, chromo_size):
 def generate_population(size, features_count, chromo_size):
     return [generate_chromo(features_count, chromo_size) for _ in range(size)]
 
-def feature_selection(sent):
-    indexes = []
-    for i in range(len(sent)):
-        if sent[i] >= 1:
-            indexes.append(i)
-    return indexes
-
 def single_point_crossover(pop_after_sel, probability):
     shuffle(list(pop_after_sel))
     pop_nextgen = pop_after_sel
@@ -255,12 +248,12 @@ def single_point_crossover(pop_after_sel, probability):
 
 # single_point_crossover(bow, 0.5)
 
-def single_point_crossover1(pop_after_sel, probability):
+def single_point_crossover1(pop_after_sel, probability, n_parents):
     shuffle(list(pop_after_sel))
-    pop_nextgen = list(pop_after_sel)
+    pop_nextgen = pop_after_sel.copy()
     chromo_l = len(pop_nextgen[0])
     for i in range(0, len(pop_after_sel), 2):
-        parent_1, parent_2 = pop_nextgen[i], pop_nextgen[i+1]
+        parent_1, parent_2 = pop_nextgen[i].copy(), pop_nextgen[i+1].copy()
         p1_features = list(np.where(np.array(parent_1) != 0)[0])
         p2_features = list(np.where(np.array(parent_2) != 0)[0])
         if random() <= probability:
@@ -294,7 +287,8 @@ def single_point_crossover1(pop_after_sel, probability):
             pop_nextgen.append(np.array(parent_1))
             pop_nextgen.append(np.array(parent_2))
         
-    return pop_nextgen
+    _, pop_nextgen = fitness_score(pop_nextgen)
+    return pop_nextgen[:n_parents]
 
 def bit_flip_mutation(pop_after_cross, probability, mutation_rate):
     n_feat = pop_after_cross[0].shape[0]   
@@ -313,16 +307,17 @@ def bit_flip_mutation(pop_after_cross, probability, mutation_rate):
         # print("MU ch:", np.where(chromo != 0)[0].shape)
     return pop_next_gen
 
-def bit_flip_mutation1(pop_after_cross, probability, mutation_rate, features_count):
+def bit_flip_mutation1(pop_after_cross, probability, mutation_rate, features_count, n_parents):
     mutation_range = int(mutation_rate*features_count)
     # if mutation_range%2 != 0:
     #     mutation_range -= 1
     # mid = mutation_range//2
     # print(mutation_range, features_count)
     
-    pop_next_gen = []
+    pop_next_gen = pop_after_cross.copy()
+
     for n in range(len(pop_after_cross)):
-        chromo = pop_after_cross[n]
+        chromo = pop_after_cross[n].copy()
         features = list(np.where(chromo != 0)[0])
         non_features = list(np.setdiff1d(np.array(range(chromo.shape[0])), features))
         
@@ -335,7 +330,9 @@ def bit_flip_mutation1(pop_after_cross, probability, mutation_rate, features_cou
             for j in rand_posi:
                 chromo[j] = abs(chromo[j] - 1)
         pop_next_gen.append(chromo)
-    return pop_next_gen
+    
+    _, pop_next_gen = fitness_score(pop_next_gen)
+    return pop_next_gen[:n_parents+20]
 
 def population_selection(pop_after_fit,n_parents):
     # size = int(len(pop_after_fit)*(n_parents/100))
@@ -347,7 +344,7 @@ def population_selection(pop_after_fit,n_parents):
 def fitness_score(population):
     scores = []
     for chromosome in population:
-        features = feature_selection(chromosome)
+        features = np.where(chromosome!=0)[0]
         logmodel.fit(X_train[:,features],Y_train)         
         predictions = logmodel.predict(X_test[:,features])
         scores.append(accuracy_score(Y_test,predictions))
@@ -373,19 +370,16 @@ def evolution(size, features_count, chromo_size,
 
         pop_after_sel = population_selection(pop_after_fit,n_parents)
         
-        pop_after_cross = single_point_crossover1(pop_after_sel, crossover_pb)
+        pop_after_cross = single_point_crossover1(pop_after_sel, crossover_pb, n_parents)
 
-        population_nextgen = bit_flip_mutation1(pop_after_cross, mutation_pb, mutation_rate, features_count)
+        population_nextgen = bit_flip_mutation1(pop_after_cross, mutation_pb, mutation_rate, features_count, n_parents)
     
-        
         # new next gen population will have the evolved population + the initial population after fitness_score
-        population_nextgen += pop_after_sel
-        _, population_new_nextgen = fitness_score(population_nextgen)
-        population_nextgen = population_selection(population_new_nextgen, n_parents)
+        # _, population_new_nextgen = fitness_score(population_nextgen)
+        # population_nextgen = population_selection(population_new_nextgen, n_parents)
         print("Population size:", len(population_nextgen))
         
     return best_chromo,best_score
-
 
 """# **Accuracy Comparison**
 
@@ -394,7 +388,7 @@ def evolution(size, features_count, chromo_size,
 ### Data Preprocessing
 """
 
-amazon = pd.read_csv("../dataset/amazon.csv")
+amazon = pd.read_csv("dataset/amazon.csv")
 amazon
 
 frame = amazon.copy()
@@ -448,18 +442,17 @@ logmodel = RandomForestClassifier(n_estimators=200, random_state=0)
 #         st = time.time()
 #         chromo_set_2, score_set_2 = evolution(
 #             size=100, 
-#             feat_count=100,
-#             n_feat=X_bow.shape[1],
+#             features_count=100,
+#             chromo_size=X_bow.shape[1],
 #             n_parents=80,
 #             crossover_pb=0.8,
 #             mutation_pb=0.05,
-#             mutation_rate=0.1,
-#             n_gen=40
+#             mutation_rate=0.05,
+#             n_gen=100
 #         )
 #         et = time.time()
 #         result_n_runs.append((chromo_set_2, score_set_2, et-st))
 #     return result_n_runs
-
 # plot(score_set_2, 0.5, 1.0, c = "green")
 
 # results = run_n_evolution(30)
