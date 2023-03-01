@@ -44,6 +44,6 @@ $$$ 23) es50 varient - try with 2 more versions = one should pass 100pop from mu
 $$$ 24) still should work on the fluctuations
 
 28/02/2023
-25) Do PT for GA on CO and MU probability
-26) Run 5 runs for 2 types of ES50 and plot comparison
+$$$ 25) Run 5 runs for 2 types of ES50 and plot comparison
+26) Do PT for GA on CO and MU probability, with 100 or 160 version
 27) once pt is done, run 30 runs for 100, 150 and 200 fc for GA and all KBGA varients
