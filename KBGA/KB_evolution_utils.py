@@ -279,7 +279,7 @@ def bit_flip_mutation1(pop_after_cross, mutation_rate1, mutation_rate2, features
         mid -= 1
 
     _, pop_next_gen = fitness_score(pop_next_gen)
-    return pop_next_gen[:n_parents]
+    return pop_next_gen[:n_parents+20]
 
 def population_selection(pop_after_fit, n_parents):
     population_nextgen = []
