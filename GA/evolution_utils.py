@@ -151,7 +151,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import random
 import time
-from random import randint, choices, randrange, random, sample
+from random import randint, choices, randrange, random, sample, shuffle
 
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression

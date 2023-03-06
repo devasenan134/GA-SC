@@ -30,7 +30,7 @@ $$$ 16) kbga_with no mutation_prb and crossover_prb
 $$$ 17) add child+parents and control pop to 80, after crossover tooo - to all types
 
 23/02/2023
-18) correct the fluctuation of the kbga varients
+$$$ 18) correct the fluctuation of the kbga varients
 $$$ 19) Comparison graph for 4 varients of kbga
 $$$ 20) the best kbga, should to taken for comparison with GA
 $$$ 21) save the pop size, in each step for all generations
@@ -44,6 +44,6 @@ $$$ 23) es50 varient - try with 2 more versions = one should pass 100pop from mu
 $$$ 24) still should work on the fluctuations
 
 28/02/2023
-$$$ 25) Run 5 runs for 2 types of ES50 and plot comparison
+$$$ 25) Run 5 runs for 2 types of ES50 and plot comparison - 100size version does better
 26) Do PT for GA on CO and MU probability, with 100 or 160 version
 27) once pt is done, run 30 runs for 100, 150 and 200 fc for GA and all KBGA varients
