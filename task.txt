@@ -49,8 +49,9 @@ $$$ 25) Run 5 runs for 2 types of ES50 and plot comparison - 100size version doe
 27) once pt is done, run 30 runs for 100, 150 and 200 fc for GA and all KBGA varients
 
 
-
-mu_pt tuning pannanum
-doc la pseudo code podanum
-kbga versions la antha time save change pannanum and check pannanum
-ga ku yen antha change work aagala nu pakanum
+25/03/2023
+kbga vs ga graph pic
+kb vp,, no_kbps ah core changes panitu, 5 runs run pananu (run)
+co la 0.3 vechu ga check pannanum (run)
+co_mu parallel ah pannanum
+KBDE padikanum
