@@ -51,12 +51,10 @@ $$$ 25) Run 5 runs for 2 types of ES50 and plot comparison - 100size version doe
 
 25/03/2023
 $$$ kbga vs ga graph pic
+$$$ es50 vs es10 graph edukanum
+$$$ co_mu parallel ah pannanum
+
 time saver change work aaguma, aagatha check pannanu
 
-co la 0.3 vechu ga check pannanum (run)
-co_mu parallel ah pannanum
-
-es50 vs es10 graph edukanum
-
-ella core changes, pt la fix panitu, ella kbga versions um save pannanums
+$$$ ella core changes, pt la fix panitu, ella kbga versions um save pannanums
 KBDE padikanum
