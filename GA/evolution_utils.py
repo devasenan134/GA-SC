@@ -361,6 +361,8 @@ def evolution(size, features_count, chromo_size,
     best_score= []
     
     population_nextgen=generate_population(size, features_count, chromo_size)
+    scores, pop_after_fit = fitness_score(population_nextgen)
+    population_nextgen = pop_after_fit.copy()
 
     for i in range(n_gen):
         scores, pop_after_fit = fitness_score(population_nextgen)
@@ -368,12 +370,12 @@ def evolution(size, features_count, chromo_size,
         best_score.append(scores[0])
         print('Best score in generation',i+1,':',scores[0], "feat_count:", np.where(pop_after_fit[0] != 0)[0].shape)
 
-        pop_after_sel = population_selection(pop_after_fit,n_parents)
+        pop_after_sel = population_selection(pop_after_fit, n_parents)
         
         pop_after_cross = single_point_crossover1(pop_after_sel, crossover_pb, n_parents)
 
         population_nextgen = bit_flip_mutation1(pop_after_cross, mutation_pb, mutation_rate, features_count, n_parents)
-    
+
         # new next gen population will have the evolved population + the initial population after fitness_score
         # _, population_new_nextgen = fitness_score(population_nextgen)
         # population_nextgen = population_selection(population_new_nextgen, n_parents)
