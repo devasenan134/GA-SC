@@ -391,7 +391,7 @@ def evolution(size, features_count, chromo_size,
 """
 
 
-amazon = pd.read_csv(dataset_path)
+amazon = pd.read_csv("../dataset/amazon.csv")
 amazon
 
 frame = amazon.copy()
