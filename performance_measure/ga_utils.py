@@ -171,18 +171,19 @@ def split(df,label):
     X_tr, X_te, Y_tr, Y_te = train_test_split(df, label, test_size=0.25, random_state=42)
     return X_tr, X_te, Y_tr, Y_te
 
-classifiers = ['LinearSVM', 'RadialSVM', 
-               'Logistic',  'RandomForest', 
-               'DecisionTree', 'KNeighbors',
-               'MultinomialNB']
+classifiers = ['Logistic',  'RandomForest', 
+               'DecisionTree', 'KNeighbors',]
+# 'LinearSVM', 'RadialSVM', 'MultinomialNB'
 
-models = [svm.SVC(kernel='linear'),
-          svm.SVC(kernel='rbf'),
+models = [
           LogisticRegression(max_iter = 1000),
           RandomForestClassifier(n_estimators=200, random_state=0),
           DecisionTreeClassifier(random_state=0),
           KNeighborsClassifier(),
-          MultinomialNB()]
+          ]
+# svm.SVC(kernel='linear'),
+# svm.SVC(kernel='rbf'),
+# MultinomialNB()
 
 def acc_score(df,label):
     Score = pd.DataFrame({"Classifier":classifiers})
@@ -198,7 +199,7 @@ def acc_score(df,label):
         et = time.time()
 
         predictions = model.predict(X_test)
-        acc.append(accuracy_score(Y_test,predictions))
+        acc.append(round(accuracy_score(Y_test,predictions), 3))
         exec_time.append(et-st)
         j = j+1     
     Score["Accuracy"] = acc
@@ -390,30 +391,29 @@ def evolution(size, features_count, chromo_size,
 ### Data Preprocessing
 """
 
-def initialize_base_variables(dataset_path):
-    amazon = pd.read_csv(dataset_path)
-    amazon
+# amazon = pd.read_csv("../dataset/imdb.csv", encoding='latin-1')
+# amazon
 
-    frame = amazon.copy()
+# frame = amazon.copy()
 
-    """*Difference between a stemmed and lemmatized words*"""
-
-
-    X_bow, features = tokens_to_bow(frame.cmd, 0)
-    y_score = frame.score
-    all_terms = list(features)
-
-    X_train, X_test, Y_train, Y_test = split(X_bow, y_score)
-
-    """### Compare models without GA"""
-    all_models_score_table = acc_score(X_bow, y_score)
-    all_models_score_table
+# """*Difference between a stemmed and lemmatized words*"""
 
 
-    """### Choosing the best classifier and starting evolution"""
-    logmodel = RandomForestClassifier(n_estimators=200, random_state=0)
+# X_bow, features = tokens_to_bow(frame.cmd, 0)
+# y_score = frame.score
+# all_terms = list(features)
 
-    return X_bow, y_score, logmodel
+# X_train, X_test, Y_train, Y_test = split(X_bow, y_score)
+
+# """### Compare models without GA"""
+# all_models_score_table = acc_score(X_bow, y_score)
+# all_models_score_table
+
+
+# """### Choosing the best classifier and starting evolution"""
+# logmodel = RandomForestClassifier(n_estimators=200, random_state=0)
+
+
 
 """### Trying different parameters"""
 
