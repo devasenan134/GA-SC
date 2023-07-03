@@ -172,18 +172,22 @@ def split(df,label):
     return X_tr, X_te, Y_tr, Y_te
 
 classifiers = ['Logistic',  'RandomForest', 
-               'DecisionTree', 'KNeighbors',]
-# 'LinearSVM', 'RadialSVM', 'MultinomialNB'
+               'DecisionTree', 'KNeighbors',
+               'LinearSVM', 'RadialSVM', 'MultinomialNB'
+               ]
+
 
 models = [
           LogisticRegression(max_iter = 1000),
           RandomForestClassifier(n_estimators=200, random_state=0),
           DecisionTreeClassifier(random_state=0),
           KNeighborsClassifier(),
+          svm.SVC(kernel='linear'),
+        svm.SVC(kernel='rbf'),
+        MultinomialNB()
           ]
-# svm.SVC(kernel='linear'),
-# svm.SVC(kernel='rbf'),
-# MultinomialNB()
+
+
 
 def acc_score(df,label):
     Score = pd.DataFrame({"Classifier":classifiers})
@@ -193,12 +197,12 @@ def acc_score(df,label):
     X_train,X_test,Y_train,Y_test = split(df,label)
     for i in models:
         model = i
+        model.fit(X_train,Y_train)
 
         st = time.time()
-        model.fit(X_train,Y_train)
+        predictions = model.predict(X_test)
         et = time.time()
 
-        predictions = model.predict(X_test)
         acc.append(round(accuracy_score(Y_test,predictions), 3))
         exec_time.append(et-st)
         j = j+1     
