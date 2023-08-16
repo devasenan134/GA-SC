@@ -152,11 +152,11 @@ def fitness_score(population):
     return list(scores[inds][::-1]), list(population[inds,:][::-1])
 
 
-def de_fitness(chromo1, chromo2):
+def de_fitness(chromo_set):
     max_score = 0
     best_chromo = None
 
-    for chromo in [chromo1, chromo2]:
+    for chromo in chromo_set:
         features = np.where(chromo!=0)[0]
         logmodel.fit(X_train[:,features],Y_train)         
         predictions = logmodel.predict(X_test[:,features])
@@ -165,7 +165,7 @@ def de_fitness(chromo1, chromo2):
             max_score = score
             best_chromo = chromo
 
-    return max_score, best_chromo                                
+    return max_score, best_chromo                                                               
 
 def de_crossover(parent1, parent2, probability):
     child = []
@@ -193,7 +193,7 @@ def de_crossover(parent1, parent2, probability):
     
     new_child = np.array([1 if i in features else 0 for i in range(chromo_len)])
     
-    return de_fitness([new_child, parent_1, parent_2])[1]
+    return de_fitness([new_child, parent_2])[1]
 
 def de_mutation(pop_after_fit, co_probability, f_score, n_parents):
     # getting the population size
