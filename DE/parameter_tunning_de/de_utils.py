@@ -182,20 +182,20 @@ def de_crossover(parent1, parent2, probability):
     features = np.where(child > 0)[0]
     non_features = np.where(child <= 0)[0]
 
-    features_count = len(features)
-
-    if len(features) > 100:
-        to_remove = features_count - 100
-        features = np.setdiff1d(features, sample(list(features), k=to_remove))
-    else:
-        to_add = 100 - features_count
-        features = np.append(features, sample(list(non_features), k=to_add))
+    # features_count = len(features)
+    # if len(features) > 100:
+    #     to_remove = features_count - 100
+    #     features = np.setdiff1d(features, sample(list(features), k=to_remove))
+    # else:
+    #     to_add = 100 - features_count
+    #     features = np.append(features, sample(list(non_features), k=to_add))
     features.sort()
     
     new_child = np.array([1 if i in features else 0 for i in range(chromo_len)])
-    return new_child
+    
+    return de_fitness([new_child, parent_1, parent_2])[1]
 
-def de_mutation(pop_after_fit, co_probability, n_parents):
+def de_mutation(pop_after_fit, co_probability, f_score, n_parents):
     # getting the population size
     pop_size = len(pop_after_fit)
     
@@ -220,37 +220,26 @@ def de_mutation(pop_after_fit, co_probability, n_parents):
         random_vec3 = pop_after_fit[rv3]
 
         # performing the DE mutation
-        trail_vec = random_vec1 + (random_vec2-random_vec3)
-        # print("x1", *random_vec1)
-        # print("x2", *(random_vec2-random_vec3))
-        # # print("x2", *scale_factor*(random_vec2-random_vec3))
-        # print("u1", *trail_vec)
-        # print(len(np.where(trail_vec > 0)[0]))
+        trail_vec = random_vec1 + f_score*(random_vec2-random_vec3)
         
-        features = np.where(trail_vec > 0)[0]
-        non_features = np.where(trail_vec <= 0)[0]
+        features = np.where(trail_vec >= 0.5)[0]
+        non_features = np.where(trail_vec < 0.5)[0]
         
-        # there is randomization in this part, in future incase of any unexpected results, have to concentrate in this part
-        if len(features) > 100:
-            to_remove = len(features) - 100
-            features = np.setdiff1d(features, sample(list(features), k=to_remove))
-        elif len(features) < 100:
-            to_add = 100 - len(features)
-            features = np.append(features, sample(list(non_features), k=to_add))
         features.sort()
         
         trail_vec = np.array([1 if i in features else 0 for i in range(chromo_len)])
         trail_vec = trail_vec.astype(int)
-        
+
         new_trail = de_crossover(target_vec, trail_vec, co_probability)   
-        
-        pop_nextgen.append(de_fitness(target_vec, new_trail)[1])
+
+        pop_nextgen.append(new_trail)
 
     return pop_nextgen
 
 def evolution(size, features_count, chromo_size,
             n_parents,
             crossover_pb,
+            f_score,
             n_gen):
     best_chromo= []
     best_score= []
@@ -265,15 +254,14 @@ def evolution(size, features_count, chromo_size,
         best_score.append(scores[0])
         print('Best score in generation',i+1,':',scores[0], "feat_count:", np.where(pop_after_fit[0] != 0)[0].shape)
         
-        population_nextgen = de_mutation(population_nextgen.copy(), crossover_pb, n_parents)
+        population_nextgen = de_mutation(population_nextgen.copy(), crossover_pb, f_score, n_parents)
         
         print("Population size:", len(population_nextgen))
         
     return best_chromo,best_score
 
 
-
-amazon = pd.read_csv("../dataset/amazon.csv")
+amazon = pd.read_csv("../../dataset/amazon.csv")
 frame = amazon.copy()
 frame
 
@@ -288,18 +276,19 @@ all_models_score_table
 
 logmodel = RandomForestClassifier(n_estimators=200, random_state=0)
 
-def run_n_evolution(n):
-    result_n_runs = []
-    for i in range(n):
-        st = time.time()
-        chromo_set_2, score_set_2 = evolution(
-            size=100, 
-            features_count=100,
-            chromo_size=X_bow.shape[1],
-            n_parents=80,
-            crossover_pb=0.8,
-            n_gen=100
-        )
-        et = time.time()
-        result_n_runs.append((chromo_set_2, score_set_2, et-st))
-    return result_n_runs
+# def run_n_evolution(n):
+#     result_n_runs = []
+#     for i in range(n):
+#         st = time.time()
+#         chromo_set_2, score_set_2 = evolution(
+#             size=100, 
+#             features_count=100,
+#             chromo_size=X_bow.shape[1],
+#             n_parents=80,
+#             crossover_pb=0.7,
+#             f_score=0.3,
+#             n_gen=100
+#         )
+#         et = time.time()
+#         result_n_runs.append((chromo_set_2, score_set_2, et-st))
+#     return result_n_runs
