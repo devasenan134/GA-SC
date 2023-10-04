@@ -253,4 +253,7 @@ imdb_mins = min(ga_imdb.min().to_list())
 imdb_maxs = max(kbga_imdb.max().to_list())
 yelp_mins = min(ga_yelp.min().to_list())
 yelp_maxs = max(kbga_yelp.max().to_list())
+print(az_mins, az_maxs)
+print(imdb_mins, imdb_maxs)
+print(yelp_mins, yelp_maxs)
 
