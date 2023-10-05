@@ -161,6 +161,8 @@ def function_evaluations(base, success_thresh, runs):
 
     return evolutions
 
+def new_function_evaluations(base, runs):
+    pass
 
 def average_no_of_function_evaluations(az, imdb, yelp, success_thresh, runs):
     az_eval = function_evaluations(az, success_thresh, runs)
