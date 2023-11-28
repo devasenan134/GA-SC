@@ -161,19 +161,26 @@ def function_evaluations(base, success_thresh, runs):
 
     return evolutions
 
+def new_function_evaluations(base, runs):
+    reached_sat_at_gen = 0
+    for i in range(runs):
+        highest_acc = base.iloc[i, -2]
+        # print(highest_acc)
+        reached_sat_at_gen += np.where(base.iloc[i, :-1] == highest_acc)[0][0]
+    return reached_sat_at_gen//100
 
-def average_no_of_function_evaluations(az, imdb, yelp, success_thresh, runs):
-    az_eval = function_evaluations(az, success_thresh, runs)
-    imdb_eval = function_evaluations(imdb, success_thresh, runs)
-    yelp_eval = function_evaluations(yelp, success_thresh, runs)
+def average_no_of_function_evaluations(az, imdb, yelp, runs):
+    az_eval = new_function_evaluations(az, runs)
+    imdb_eval = new_function_evaluations(imdb, runs)
+    yelp_eval = new_function_evaluations(yelp, runs)
 
     cols = ["AFES"]
     index_col = ["Amazon", "IMDB", "Yelp", "Average"]
 
     data = [
-        az_eval/runs,
-        imdb_eval/runs,
-        yelp_eval/runs
+        az_eval,
+        imdb_eval,
+        yelp_eval
     ]
 
     afes = pd.DataFrame(data, columns=cols)
@@ -185,7 +192,7 @@ def average_no_of_function_evaluations(az, imdb, yelp, success_thresh, runs):
     return afes
 
 def successful_performance(az, imdb, yelp, success_thresh, runs):
-    afes = average_no_of_function_evaluations(az, imdb, yelp, success_thresh, runs)
+    afes = average_no_of_function_evaluations(az, imdb, yelp, runs)
     p = probability_of_convergence(az, imdb, yelp, success_thresh, runs)
 
     cols = ["SP"]
