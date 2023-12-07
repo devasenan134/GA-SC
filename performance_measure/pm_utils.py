@@ -165,9 +165,11 @@ def new_function_evaluations(base, runs):
     reached_sat_at_gen = 0
     for i in range(runs):
         highest_acc = base.iloc[i, -2]
-        # print(highest_acc)
+        print(highest_acc)
+        tmp = np.where(base.iloc[i, :-1] == highest_acc)[0][0]
+        # print(tmp)
         reached_sat_at_gen += np.where(base.iloc[i, :-1] == highest_acc)[0][0]
-    return reached_sat_at_gen//100
+    return reached_sat_at_gen//30
 
 def average_no_of_function_evaluations(az, imdb, yelp, runs):
     az_eval = new_function_evaluations(az, runs)
