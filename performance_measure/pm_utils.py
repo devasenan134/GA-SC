@@ -6,6 +6,8 @@ from tabulate import tabulate
 
 ga_path = '../pickles/ga/30runs/'
 kbga_path = '../pickles/kbga/30runs/'
+de_path = '../pickles/de/'
+kbde_path = '../pickles/kbde/'
 
 ga_files = ['30_run_az_ga_ts_pt.pkl', 
             '30_run_imdb_ga_ts_pt.pkl',
@@ -15,6 +17,17 @@ kbga_files = ['30_run_az_kbga_vp_ts.pkl',
               '30_run_imdb_kbga_vp_ts.pkl',
               '30_run_yelp_kbga_vp_ts.pkl',]
 
+de_files = [
+            '30_run_az_de_pt_04.pkl',
+            '30_run_az_de_pt_04.pkl',
+            '30_run_az_de_pt_04.pkl',
+            ]
+
+kbde_files = [
+            '30_run_az_kbde_pt_final_04.pkl',
+            '30_run_az_kbde_pt_final_04.pkl',
+            '30_run_az_kbde_pt_final_04.pkl',
+            ]
 
 def average_best_fitness_value(az, imdb, yelp):
     cols = ["gen_"+str(i) for i in [1, 25, 50, 75, 100]]
@@ -54,7 +67,14 @@ def average_best_of_generation(az, imdb, yelp):
 def optimization_accuracy(az, imdb, yelp):
     cols = ["gen_"+str(i) for i in [1, 25, 50, 75, 100]]
     index_col = ["Amazon", "IMDB", "Yelp", "Average"]
-    
+
+    az_mins = min(az.min().to_list())
+    az_maxs = max(az.max().to_list())
+    imdb_mins = min(imdb.min().to_list())
+    imdb_maxs = max(imdb.max().to_list())
+    yelp_mins = min(yelp.min().to_list())
+    yelp_maxs = max(yelp.max().to_list())
+
     data = [
         list(map(lambda i: (i-az_mins)/(az_maxs-az_mins), az.iloc[-1, [0, 24, 49, 74, 99]])),
         list(map(lambda i: (i-imdb_mins)/(imdb_maxs-imdb_mins), imdb.iloc[-1, [0, 24, 49, 74, 99]])),
@@ -252,17 +272,14 @@ kbga_az = tabulate_runs(kbga_path+kbga_files[0], runs)
 kbga_imdb = tabulate_runs(kbga_path+kbga_files[1], runs)
 kbga_yelp = tabulate_runs(kbga_path+kbga_files[2], runs)
 
+de_az = tabulate_runs(de_path+de_files[0], runs)
+de_imdb = tabulate_runs(de_path+de_files[1], runs)
+de_yelp = tabulate_runs(de_path+de_files[2], runs)
+
+kbde_az = tabulate_runs(kbde_path+kbde_files[0], runs)
+kbde_imdb = tabulate_runs(kbde_path+kbde_files[1], runs)
+kbde_yelp = tabulate_runs(kbde_path+kbde_files[2], runs)
+
 # base_ga = pd.concat([ga_az.iloc[-1, :], ga_imdb.iloc[-1, :], ga_yelp.iloc[-1, :]], axis=1)
 # base_ga.columns = ['Amazon', "IMDB", "Yelp"]
 # base_ga
-
-az_mins = min(ga_az.min().to_list())
-az_maxs = max(kbga_az.max().to_list())
-imdb_mins = min(ga_imdb.min().to_list())
-imdb_maxs = max(kbga_imdb.max().to_list())
-yelp_mins = min(ga_yelp.min().to_list())
-yelp_maxs = max(kbga_yelp.max().to_list())
-print(az_mins, az_maxs)
-print(imdb_mins, imdb_maxs)
-print(yelp_mins, yelp_maxs)
-
