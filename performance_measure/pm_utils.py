@@ -19,14 +19,14 @@ kbga_files = ['30_run_az_kbga_vp_ts.pkl',
 
 de_files = [
             '30_run_az_de_pt_04.pkl',
-            '30_run_az_de_pt_04.pkl',
-            '30_run_az_de_pt_04.pkl',
+            '30_run_imdb_de_pt_04.pkl',
+            '30_run_yelp_de_pt_04.pkl',
             ]
 
 kbde_files = [
             '30_run_az_kbde_pt_final_04.pkl',
-            '30_run_az_kbde_pt_final_04.pkl',
-            '30_run_az_kbde_pt_final_04.pkl',
+            '30_run_imdb_kbde_pt_final_04.pkl',
+            '30_run_yelp_kbde_pt_final_04.pkl',
             ]
 
 def average_best_fitness_value(az, imdb, yelp):
